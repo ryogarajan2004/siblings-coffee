@@ -34,6 +34,13 @@ public class IngredientController {
 
     @PutMapping("/edit/{id}")
     public ResponseEntity<Ingredient> updateIngredient(@PathVariable Long id, @RequestBody Ingredient updatedIngridient) {
-        return ingredientService.updatedIngredient(id, updatedIngridient).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return ingredientService.updateIngredient(id, updatedIngridient).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity deleteIngredient(@PathVariable Long id){
+         ingredientService.deleteIngredient(id);
+
+         return  ResponseEntity.ok().build();
     }
 }

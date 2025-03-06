@@ -24,7 +24,7 @@ public class Order {
     private double totalAmount;
 
     @Enumerated(EnumType.STRING)
-    private Order status;
+    private OrderStatus status;
 }
 
  enum OrderStatus {
