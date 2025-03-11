@@ -16,8 +16,7 @@ public class Product {
     private Long id;
     private String name;
 
-
-
+    private String imageUrl;
     @OneToMany(mappedBy = "product",cascade = CascadeType.ALL)
     private List<ProductIngredient>ingredients;
 

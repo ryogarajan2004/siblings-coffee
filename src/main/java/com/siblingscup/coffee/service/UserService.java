@@ -1,13 +1,16 @@
 package com.siblingscup.coffee.service;
 
+import com.siblingscup.coffee.dto.LoginRequest;
 import com.siblingscup.coffee.dto.RegisterRequest;
 import com.siblingscup.coffee.model.User;
 import com.siblingscup.coffee.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,5 +27,18 @@ public class UserService {
         userRepository.save(user);
 
         return ResponseEntity.ok().build();
+    }
+
+    public HttpStatus checkUser(LoginRequest request){
+        Optional<User>user=userRepository.findByUsername(request.getUsername());
+
+        if(user.isPresent()){
+            ;
+            return HttpStatus.FOUND;
+        }
+
+        else
+            return HttpStatus.NOT_FOUND;
+
     }
 }

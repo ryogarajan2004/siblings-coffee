@@ -7,6 +7,7 @@ import com.siblingscup.coffee.dto.RegisterRequest;
 import com.siblingscup.coffee.service.AuthService;
 import com.siblingscup.coffee.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,20 +19,24 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     @Autowired
-    private  AuthService authService;
+    private AuthService authService;
 
     @Autowired
     private UserService userService;
+
     @PostMapping("/register")
-    public ResponseEntity<?>register(@RequestBody RegisterRequest request){
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        
         return ResponseEntity.ok(userService.registerUser(request));
     }
 
 
     @PostMapping("/login")
-    public ResponseEntity<?>login(@RequestBody LoginRequest request){
-        String token=authService.login(request);
-        return ResponseEntity.ok(new AuthResponse(token));
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+
+        if (userService.checkUser(request).equals(HttpStatus.FOUND))
+            return ResponseEntity.ok(new AuthResponse(authService.login(request)));
+        else return ResponseEntity.notFound().build();
     }
 
 }
