@@ -14,7 +14,10 @@ public class Ingredient {
     private Long id;
     private String name;
     private int stockQuantity;
+
+
     private String unit;
+    private double conversionFactor;
     private int lowStockThreshold;
     private double price;
 

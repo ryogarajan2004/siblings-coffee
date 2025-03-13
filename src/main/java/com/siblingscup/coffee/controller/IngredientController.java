@@ -1,8 +1,10 @@
 package com.siblingscup.coffee.controller;
 
+import com.siblingscup.coffee.dto.IngredientDto;
 import com.siblingscup.coffee.model.Ingredient;
 import com.siblingscup.coffee.service.IngredientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,8 +30,9 @@ public class IngredientController {
     }
 
     @PostMapping("/create")
-    public Ingredient createIngridient(@RequestBody Ingredient ingredient) {
-        return ingredientService.saveIngredient(ingredient);
+    public ResponseEntity<HttpStatus> createIngridient(@RequestBody IngredientDto ingredient) {
+     ingredientService.saveIngredient(ingredient);
+     return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
     @PutMapping("/edit/{id}")
@@ -38,7 +41,7 @@ public class IngredientController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity deleteIngredient(@PathVariable Long id){
+    public ResponseEntity<?> deleteIngredient(@PathVariable Long id){
          ingredientService.deleteIngredient(id);
 
          return  ResponseEntity.ok().build();

@@ -1,5 +1,6 @@
 package com.siblingscup.coffee.service;
 
+import com.siblingscup.coffee.dto.IngredientDto;
 import com.siblingscup.coffee.model.Ingredient;
 import com.siblingscup.coffee.repository.IngredientRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class IngredientService {
 
+    @Autowired
     private IngredientRepository repository;
+
+    @Autowired
+    private SupplierService supplierService;
 
     public List<Ingredient> getAllIngredients() {
         return repository.findAll();
@@ -23,8 +28,22 @@ public class IngredientService {
         return repository.findById(id);
     }
 
-    public Ingredient saveIngredient(Ingredient ingredient) {
-        return repository.save(ingredient);
+    public Ingredient saveIngredient(IngredientDto dto) {
+        try{
+        Ingredient ingredient=new Ingredient();
+        ingredient.setName(dto.getName());
+        ingredient.setUnit(dto.getBaseUnit());
+        ingredient.setPrice(dto.getPrice());
+        ingredient.setConversionFactor(dto.getConversionFactor());
+        ingredient.setLowStockThreshold(dto.getLowStockThreshold());
+        ingredient.setStockQuantity(dto.getStockQuantity());
+
+        ingredient.setSupplier(supplierService.getSupplierById(dto.getSupplierId()).get());
+       return   repository.save(ingredient);
+    }catch (Exception e){
+            System.out.println(e.toString());
+        }
+        return null;
     }
 
     public void deleteIngredient(Long id) {

@@ -3,6 +3,7 @@ package com.siblingscup.coffee.service;
 
 import com.siblingscup.coffee.model.Supplier;
 import com.siblingscup.coffee.repository.SupplierRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,7 +11,8 @@ import java.util.Optional;
 
 @Service
 public class SupplierService {
-    private final SupplierRepository supplierRepository;
+    @Autowired
+    private  SupplierRepository supplierRepository;
 
     public SupplierService(SupplierRepository supplierRepository) {
         this.supplierRepository = supplierRepository;

@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface SupplierOrderRepository extends JpaRepository<Long,SupplierOrder> {
-    List<SupplierOrder> findByStatus(String  status);
+public interface SupplierOrderRepository extends JpaRepository<SupplierOrder,Long> {
+//    List<SupplierOrder> findByStatus(String  status);
 }

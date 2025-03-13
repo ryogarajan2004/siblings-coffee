@@ -20,9 +20,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class SupplierOrderService {
-    private final SupplierOrderRepository supplierOrderRepository;
-    private final SupplierOrderItemRepository supplierOrderItemRepository;
-    private final IngredientRepository ingredientRepository;
+    private  SupplierOrderRepository supplierOrderRepository;
+    private  SupplierOrderItemRepository supplierOrderItemRepository;
+    private  IngredientRepository ingredientRepository;
 
     @Transactional
     public void autoOrderLowStockItems() {
