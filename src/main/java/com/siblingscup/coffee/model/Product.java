@@ -11,25 +11,26 @@ import java.util.List;
 @Entity
 @Table(name = "products")
 public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
-
     private String imageUrl;
-    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL)
-    private List<ProductIngredient>ingredients;
-
     private double profitMargin;
 
-    @Transient
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductIngredient> ingredients;
+
+    @Column(nullable = true)
     private double price;
 
-    public double calculatePrice(){
-        double totalCost=0.0;
-        for (ProductIngredient pi:ingredients){
-            totalCost+=pi.getIngredient().getPrice()*pi.getQuantityRequired();
+    public double calculatePrice() {
+        double totalCost = 0.0;
+        for (ProductIngredient pi : ingredients) {
+            totalCost += pi.getIngredient().getPrice() * pi.getQuantityRequired();
         }
-        return totalCost+profitMargin;
+        return totalCost + profitMargin;
     }
 }

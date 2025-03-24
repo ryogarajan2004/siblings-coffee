@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+
 @Getter
 @Setter
 @Entity
@@ -15,8 +16,8 @@ public class Ingredient {
     private String name;
     private int stockQuantity;
 
-
-    private String unit;
+    @Enumerated(EnumType.STRING)
+    private Unit unit;
     private double conversionFactor;
     private int lowStockThreshold;
     private double price;

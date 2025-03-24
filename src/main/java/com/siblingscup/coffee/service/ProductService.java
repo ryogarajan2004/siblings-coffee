@@ -1,33 +1,96 @@
 package com.siblingscup.coffee.service;
 
+import com.siblingscup.coffee.dto.ProductDto;
+import com.siblingscup.coffee.dto.ProductIngredientDTO;
+import com.siblingscup.coffee.model.Ingredient;
 import com.siblingscup.coffee.model.Product;
+import com.siblingscup.coffee.model.ProductIngredient;
+import com.siblingscup.coffee.repository.IngredientRepository;
 import com.siblingscup.coffee.repository.ProductRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ProductService
-{
+public class ProductService {
+
     @Autowired
-    private ProductRepository repository;
+    private IngredientRepository ingredientRepository;
 
-    public List<Product>getAllProducts(){return repository.findAll();}
+    @Autowired
+    private ProductRepository productRepository;
 
-    public Optional<Product>getProductById(Long id){
-        return repository.findById(id);
+    private static final String IMAGE_DIRECTORY = "/var/local/siblingscup/product-images/";
+
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
     }
 
-    public Product saveProduct(Product product){
-        return repository.save(product);
+    public Optional<Product> getProductById(Long id) {
+        return productRepository.findById(id);
     }
 
-    public void deleteProduct(Long id){
-        repository.deleteById(id);
+    @Transactional
+    public Product createProduct(ProductDto productDto,String imageUrl) {
+        Product product = new Product();
+        product.setName(productDto.getName());
+        product.setProfitMargin(productDto.getProfitMargin());
+
+        // Save Image
+        product.setImageUrl(imageUrl);
+        double priceDemo=0;
+        List<ProductIngredient> ingredients = new ArrayList<>();
+        for (ProductIngredientDTO dto : productDto.getIngredients()) {
+            Optional<Ingredient> ingredientOpt = ingredientRepository.findById(dto.getIngredientId());
+            if (ingredientOpt.isPresent()) {
+                ProductIngredient ingredient = new ProductIngredient();
+                ingredient.setProduct(product);
+                ingredient.setIngredient(ingredientOpt.get());
+                ingredient.setQuantityRequired(dto.getQuantityRequired());
+                ingredients.add(ingredient);
+                priceDemo+=ingredient.getIngredient().getPrice() *ingredient.getQuantityRequired();
+            }
+        }
+
+        product.setIngredients(ingredients);
+
+        // Calculate Price
+        product.setPrice(priceDemo+productDto.getProfitMargin());
+
+        return productRepository.save(product);
+    }
+
+    public String saveImage(MultipartFile file, String productName) {
+        try {
+            Path dirPath = Paths.get(IMAGE_DIRECTORY);
+            if (!Files.exists(dirPath)) {
+                Files.createDirectories(dirPath);
+            }
+
+            String fileName = productName.replaceAll("\\s", "_").toLowerCase() + ".jpg";
+            Path filePath = Paths.get(IMAGE_DIRECTORY, fileName);
+
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            return IMAGE_DIRECTORY+fileName; // Path to access the image
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to store file: " + e.getMessage());
+        }
+    }
+
+    public void deleteProduct(Long id) {
+        productRepository.deleteById(id);
     }
 }
