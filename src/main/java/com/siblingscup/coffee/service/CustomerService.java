@@ -2,13 +2,11 @@ package com.siblingscup.coffee.service;
 
 
 import com.siblingscup.coffee.model.Customer;
-import com.siblingscup.coffee.model.Ingredient;
 import com.siblingscup.coffee.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PutMapping;
 
-import javax.swing.text.html.Option;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +14,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomerService {
 
+    @Autowired
     private CustomerRepository repository;
 
     public List<Customer>getAllCustomers(){

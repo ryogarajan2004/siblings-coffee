@@ -1,14 +1,16 @@
 package com.siblingscup.coffee.controller;
 
 import com.siblingscup.coffee.model.Customer;
-import com.siblingscup.coffee.model.Ingredient;
 import com.siblingscup.coffee.service.CustomerService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+
+import com.siblingscup.coffee.dto.CustomerDTO;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -29,7 +31,12 @@ public class CustomerController {
     }
 
     @PostMapping("/create")
-    public Customer createCustomer(@RequestBody Customer customer){
+    public Customer createCustomer(@RequestBody CustomerDTO customerDTO){
+        Customer customer =new Customer();
+        customer.setName(customerDTO.getName()==null?"":customerDTO.getName());
+        customer.setPhone(customerDTO.getPhone()==null?"":customerDTO.getPhone());
+        customer.setEmail(customerDTO.getEmail()==null?"":customerDTO.getEmail());
+        customer.setLoyaltypoints(0);
         return customerService.saveCustomer(customer);
     }
 

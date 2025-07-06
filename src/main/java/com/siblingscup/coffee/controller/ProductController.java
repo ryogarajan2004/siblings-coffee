@@ -30,27 +30,25 @@ public class ProductController {
         return product.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<Product> createProduct(
-            @RequestParam("image") MultipartFile file,
-            @RequestParam("data") String productData) {
+   @PostMapping("/create")
+public ResponseEntity<Product> createProduct(
+        @RequestParam("image") MultipartFile file,
+        @RequestParam("data") String productData) {
 
-        try {
-            // Convert JSON string to ProductDto
-            ObjectMapper objectMapper = new ObjectMapper();
-            ProductDto productDto = objectMapper.readValue(productData, ProductDto.class);
+    try {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ProductDto productDto = objectMapper.readValue(productData, ProductDto.class);
+        System.out.println(productDto.toString());
+        String imageUrl = productService.saveImage(file, productDto.getName());
+        Product savedProduct = productService.createProduct(productDto, imageUrl);
 
-            // Handle file upload
-            String imageUrl = productService.saveImage(file, productDto.getName());
-
-            // Create and save product
-            Product savedProduct = productService.createProduct(productDto, imageUrl);
-
-            return ResponseEntity.ok(savedProduct);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null);
-        }
+        return ResponseEntity.ok(savedProduct);
+    } catch (Exception e) {
+        e.printStackTrace(); // 👈 Optional for debugging
+        return ResponseEntity.badRequest().body(null);
     }
+}
+
 
 
     @DeleteMapping("/delete/{id}")

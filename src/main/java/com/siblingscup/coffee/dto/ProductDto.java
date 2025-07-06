@@ -12,6 +12,15 @@ public class ProductDto {
     private String name;
         private double profitMargin;
     private List<ProductIngredientDTO> ingredients;
-    private MultipartFile image;
+
+    @Override
+  public   String toString()
+    {
+        return this.name+" "+profitMargin+"  "+ingredients.toString();
+    }
+
+    public double getProfitMargin() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 
 }

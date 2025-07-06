@@ -25,4 +25,38 @@ public class ProductIngredient {
     private Ingredient ingredient;
 
     private double quantityRequired;
+
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Product getProduct() {
+        return this.product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public Ingredient getIngredient() {
+        return this.ingredient;
+    }
+
+    public void setIngredient(Ingredient ingredient) {
+        this.ingredient = ingredient;
+    }
+
+    public double getQuantityRequired() {
+        return this.quantityRequired;
+    }
+
+    public void setQuantityRequired(double quantityRequired) {
+        this.quantityRequired = quantityRequired;
+    }
+
 }
