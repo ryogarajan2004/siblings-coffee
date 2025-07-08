@@ -3,6 +3,8 @@ package com.siblingscup.coffee.service;
 import com.siblingscup.coffee.model.Sale;
 import com.siblingscup.coffee.repository.SalesRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +13,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class SaleService {
+
+    @Autowired
     private  SalesRepository repository;
 
 

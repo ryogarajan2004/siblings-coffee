@@ -9,6 +9,8 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "customers")
 @Getter
@@ -22,10 +24,11 @@ public class Customer {
     private String email;
     private String phone;
     private int loyaltypoints;
-@Column(updatable = false)
-@CreationTimestamp
-private LocalDateTime createdAt;
+    @Column(updatable = false)
+    @CreationTimestamp
+    private LocalDateTime createdAt;
     @OneToMany(mappedBy = "customer")
+    @JsonIgnore
     private List<Order> orders;
 
     public Long getId() {

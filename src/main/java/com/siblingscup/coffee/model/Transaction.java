@@ -2,6 +2,8 @@ package com.siblingscup.coffee.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,6 +28,7 @@ public class Transaction {
     private PaymentType paymentType;
     @ManyToOne
     @JoinColumn(name = "sale_id")
+    @JsonIgnore
     private Sale sale;
 
     public Long getId() {

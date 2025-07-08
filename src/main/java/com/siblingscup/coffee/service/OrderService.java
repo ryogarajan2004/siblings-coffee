@@ -16,6 +16,7 @@ import com.siblingscup.coffee.repository.TransactionRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,30 +26,58 @@ import java.util.Optional;
 
 import com.siblingscup.coffee.dto.OrderItemDTO;
 import com.siblingscup.coffee.dto.OrderRequestDTO;
+import com.siblingscup.coffee.dto.OrderSummary.OrderItemSummaryDTO;
+import com.siblingscup.coffee.dto.OrderSummary.OrderSummaryDTO;
 
 @Service
-@RequiredArgsConstructor
+
 public class OrderService {
 
-    private OrderRepository repository;
+    @Autowired
+    private   OrderRepository repository;
+    @Autowired
     private CustomerRepository customerRepo;
+    @Autowired
     private ProductRepository productRepo;
+    @Autowired
     private OrderRepository orderRepo;
+    @Autowired
     private SalesRepository saleRepo;
+    @Autowired
     private TransactionRepository transactionRepo;
-    public List<Order>getAllOrders(){
-        return  repository.findAll();
+    public List<OrderSummaryDTO>getAllOrders(){
+        return  repository.findAll().stream().map(this::mapToResponseDTO).toList();
     }
 
-    public Optional<Order>getOrderById(Long id){
-        return repository.findById(id);
+    public Optional<OrderSummaryDTO>getOrderById(Long id){
+        return repository.findById(id).map(this::mapToResponseDTO);
     }
 
     public Order saveOrder(Order order){
         return repository.save(order);
     }
 
-    public Order createOrder(OrderRequestDTO request){
+    private OrderSummaryDTO mapToResponseDTO(Order order){
+        OrderSummaryDTO dto=new OrderSummaryDTO();
+        dto.setId(order.getId());
+        dto.setOrderTime(order.getOrderTime());
+        dto.setTotalAmount(order.getTotalAmount());
+        dto.setStatus(order.getStatus());
+
+        List<OrderItemSummaryDTO> itemDTOs=new ArrayList<>();
+        for(OrderItem item:order.getItems()){
+            OrderItemSummaryDTO itemDto=new OrderItemSummaryDTO();
+            itemDto.setId(item.getId());
+            itemDto.setProductName(item.getProduct().getName());
+            itemDto.setQuantity(item.getQuantity());
+            itemDto.setPrice(item.getPrice());
+            itemDTOs.add(itemDto);
+        }
+        dto.setItems(itemDTOs);
+        return dto;
+    }
+
+    public OrderSummaryDTO createOrder(OrderRequestDTO request){
 
         Customer customer=null;
        if (request.getCustomerId() != null) {
@@ -90,7 +119,7 @@ public class OrderService {
         txn.setPaymentType(PaymentType.valueOf(request.getPaymentType().toUpperCase()));
         txn.setTransactionTime(LocalDateTime.now());
         transactionRepo.save(txn);
-        return order;
+        return mapToResponseDTO(order);
     }
 
     public void deleteOrder(Long id){

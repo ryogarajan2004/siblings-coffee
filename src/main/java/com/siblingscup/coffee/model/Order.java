@@ -6,6 +6,8 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Data
 @Entity
 @Table(name = "orders")
@@ -21,12 +23,15 @@ public class Order {
     private LocalDateTime orderTime;
 
     @OneToMany(mappedBy = "order",cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<OrderItem>items;
 
     private double totalAmount;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
+
+    private Integer tokenNumber;
 
     public Long getId() {
         return this.id;
@@ -75,5 +80,15 @@ public class Order {
     public void setStatus(OrderStatus status) {
         this.status = status;
     }
+
+
+    public Integer getTokenNumber() {
+        return this.tokenNumber;
+    }
+
+    public void setTokenNumber(Integer tokenNumber) {
+        this.tokenNumber = tokenNumber;
+    }
+
 }
 
