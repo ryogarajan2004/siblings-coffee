@@ -5,9 +5,9 @@ import com.siblingscup.coffee.dto.UpdateStatusDTO;
 import com.siblingscup.coffee.model.Order;
 import com.siblingscup.coffee.model.OrderStatus;
 import com.siblingscup.coffee.repository.OrderRepository;
+import com.siblingscup.coffee.service.OrderBroadcastService;
 import com.siblingscup.coffee.service.OrderService;
 
-import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +25,9 @@ import com.siblingscup.coffee.dto.OrderSummary.OrderSummaryDTO;
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
+
+    @Autowired
+    private OrderBroadcastService orderBroadcastService;
 
     @Autowired
     private OrderRepository orderRepo;
@@ -49,6 +52,13 @@ public class OrderController {
         return ResponseEntity.ok(activeOrders);
     }
 
+
+    @GetMapping("/kitchen")
+    public ResponseEntity<List<Order>>getKitchenOrders(){
+        List<Order>kitchenOrders=orderRepo.findByStatusIn(List.of(OrderStatus.NEW,OrderStatus.PREPARING));
+        return ResponseEntity.ok(kitchenOrders);
+    }
+
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateStatus(@PathVariable Long id, @RequestBody UpdateStatusDTO status) {
         Order order = orderRepo.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
@@ -56,6 +66,11 @@ public class OrderController {
             OrderStatus newStatus = OrderStatus.valueOf(status.getStatus().toUpperCase());
             order.setStatus(newStatus);
             orderRepo.save(order);
+
+            List<Order> kitchenOrders=orderRepo.findByStatusNot(OrderStatus.SERVED);
+
+            orderBroadcastService.broadcastKitchenOrders(kitchenOrders);
+
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Invalid status value:" + status.getStatus());
