@@ -1,8 +1,13 @@
 package com.siblingscup.coffee.controller;
 
 import com.siblingscup.coffee.dto.OrderRequestDTO;
+import com.siblingscup.coffee.dto.UpdateStatusDTO;
+import com.siblingscup.coffee.model.Order;
+import com.siblingscup.coffee.model.OrderStatus;
+import com.siblingscup.coffee.repository.OrderRepository;
 import com.siblingscup.coffee.service.OrderService;
 
+import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +27,8 @@ import com.siblingscup.coffee.dto.OrderSummary.OrderSummaryDTO;
 public class OrderController {
 
     @Autowired
+    private OrderRepository orderRepo;
+    @Autowired
     private OrderService orderService;
 
     @GetMapping
@@ -36,8 +43,25 @@ public class OrderController {
         return order.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-   
-    
+    @GetMapping("/active")
+    public ResponseEntity<List<Order>> getActiveOrders() {
+        List<Order> activeOrders = orderRepo.findByStatusNot(OrderStatus.SERVED);
+        return ResponseEntity.ok(activeOrders);
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<?> updateStatus(@PathVariable Long id, @RequestBody UpdateStatusDTO status) {
+        Order order = orderRepo.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
+        try {
+            OrderStatus newStatus = OrderStatus.valueOf(status.getStatus().toUpperCase());
+            order.setStatus(newStatus);
+            orderRepo.save(order);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid status value:" + status.getStatus());
+        }
+    }
+
     @PostMapping("/place")
     public ResponseEntity<?> placeOrder(@RequestBody OrderRequestDTO request) {
         try {
